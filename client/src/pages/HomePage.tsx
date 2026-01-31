@@ -28,7 +28,7 @@ export const HomePage = () => {
     <div className="min-h-screen">
       <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-4">Welcome to MERN Store</h1>
+          <h1 className="text-5xl font-bold mb-4">Welcome to Store</h1>
           <p className="text-xl mb-8">Discover amazing products at great prices</p>
           <Link
             to="/products"

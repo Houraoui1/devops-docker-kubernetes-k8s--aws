@@ -23,6 +23,7 @@ export const LoginPage = () => {
       navigate('/');
     } catch (err) {
       // Error handled by store
+    console.log(err)
     } finally {
       setIsLoading(false);
     }

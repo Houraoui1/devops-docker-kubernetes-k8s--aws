@@ -26,6 +26,7 @@ export const RegisterPage = () => {
       navigate('/');
     } catch (err) {
       // Error handled by store
+      console.log(err)
     } finally {
       setIsLoading(false);
     }

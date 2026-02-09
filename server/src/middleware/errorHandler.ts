@@ -1,12 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/appError';
 
-export const errorHandler = (
-  err: AppError | Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const errorHandler = (err: AppError | Error, req: Request, res: Response): void => {
   let error = { ...err } as AppError;
   error.message = err.message;
 
@@ -33,7 +28,7 @@ export const errorHandler = (
   res.status(statusCode).json({
     status,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
 

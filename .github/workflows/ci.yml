@@ -1,0 +1,92 @@
+name: build-and-lint
+
+
+
+on:
+  push:
+    branches: [main,dev]
+  pull_request:
+    branches: [main,dev]
+
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20]  # Vous pouvez tester plusieurs versions : [18, 20]
+    
+    steps:
+      # ============================================
+      # CHECKOUT & SETUP
+      # ============================================
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+      
+      # ============================================
+      # BACKEND - Server
+      # ============================================
+      
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci
+      
+      - name: Lint backend code
+        working-directory: server
+        run: npm run lint -- --max-warnings=0
+      
+      - name: Build backend TypeScript
+        working-directory: server
+        run: npm run build
+      
+      # ============================================
+      # FRONTEND - Client
+      # ============================================
+      
+      - name: Install frontend dependencies
+        working-directory: client
+        run: npm ci
+      
+      - name: Lint frontend code
+        working-directory: client
+        run: npm run lint -- --max-warnings=0
+      
+      - name: Build frontend React app
+        working-directory: client
+        run: npm run build
+      
+      # ============================================
+      # DOCKER BUILD
+      # ============================================
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: false
+          tags: backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          push: false
+          tags: frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
